@@ -45,13 +45,11 @@ yum update -y && yum install -y epel-release && yum install -y \
 	&& tar xf hdpm-dev.linux.tar.gz \
 	&& mv hdpm-dev/bin/hdpm /usr/bin/ \
 	&& rm -rf hdpm-dev hdpm-dev.linux.tar.gz \
-	&& chown -R gx:gx /home/gx
-
-su gx \
 	&& cd /home/gx \
 	&& /bin/bash -c "hdpm fetch -d root@binary amptools evio jana rcdb \
 	&& hdpm install amptools evio jana rcdb \
-	&& hdpm clean --obliterate"
+	&& hdpm clean --obliterate" \
+	&& chown -R gx:gx /home/gx
 
 
 
