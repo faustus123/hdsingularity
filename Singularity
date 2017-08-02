@@ -46,6 +46,7 @@ yum update -y && yum install -y epel-release && yum install -y \
 	&& mv hdpm-dev/bin/hdpm /usr/bin/ \
 	&& rm -rf hdpm-dev hdpm-dev.linux.tar.gz \
 	&& cd /home/gx \
+	&& export GLUEX_TOP=/home/gx \
 	&& /bin/bash -c "hdpm fetch -d root@binary amptools evio jana rcdb \
 	&& hdpm install amptools evio jana rcdb \
 	&& hdpm clean --obliterate" \
