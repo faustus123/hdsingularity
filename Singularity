@@ -30,9 +30,45 @@ source /home/gx/.hdpm/env/master.csh && /bin/tcsh
 %post
 
 yum update -y && yum install -y epel-release && yum install -y \
+	binutils \
+	blas-static \
+	boost-devel \
+	bzip2-devel \
+	clang \
+	cmake3 \
 	curl \
+	expat-devel \
+	fftw-devel \
+	file \
+	gcc \
+	gcc-c++ \
+	gcc-gfortran \
+	imake patch \
+	lapack-devel \
+	lapack-static \
+	libXext-devel \
+	libXft-devel \
+	libXi-devel \
+	libXmu-devel \
+	libXpm-devel \
+	lsof \
+	make \
+	man \
+	openmotif-devel \
+	python-devel \
+	scons \
+	sqlite-devel \
+	subversion \
 	tar \
 	tcsh \
+	xerces-c-devel \
+	blas-devel \
+	bzip2 \
+	git \
+	libX11-devel \
+	mesa-libGLU-devel \
+	mysql-devel \
+	which \
 	&& yum clean all \
 	&& cd /home \
 	&& curl -OL https://halldweb.jlab.org/dist/hdpm/gxsrc.tar.gz \
