@@ -1,0 +1,26 @@
+
+# This will set the prompt for the tsch shell and then attempt
+# to set the BMS_OSNAME envar and source the setenv.csh for
+# sim-recon build for this platform, but only if it exsts.
+#
+# For this to work, docker must mount the appropriate "builds"
+# directory in /builds of the container. For example:
+#
+#  docker run --rm -it -v ${HOME}/HallD/builds:/builds centos7:halld
+#
+# This is installed by the Dockerfile when the image is built into
+# the root home directory as ".tcshrc" so that it's automatically
+# 
+
+set prompt='docker:%c>'
+
+if ( -e /builds/sim-recon/src/BMS/osrelease.pl ) then
+	setenv BMS_OSNAME `/builds/sim-recon/src/BMS/osrelease.pl`
+endif
+
+if ( $?BMS_OSNAME ) then
+	if ( -e /builds/sim-recon/$BMS_OSNAME/setenv.csh ) then
+		source /builds/sim-recon/$BMS_OSNAME/setenv.csh
+	endif
+endif
+

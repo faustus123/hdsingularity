@@ -1,0 +1,43 @@
+#!/bin/tcsh -f
+
+# This will stop and then remove the docker container
+# (if it exists) that was started by dsh or dsh_gluon
+
+set image_name=centos7:sim-recon
+
+while ( $# ) 
+	switch ( $1 )
+		
+		case '-u':
+			shift
+			breaksw
+		case '-c':
+			shift
+			breaksw
+		case '-v':
+			shift
+			breaksw
+		case '-cv':
+			breaksw
+
+		default:
+			set image_name=$1
+	endsw
+	shift
+end
+
+# Check if a running container exists for this image.
+set container_id=`docker ps -a | grep $image_name | awk '{print $1}'`
+if ( $container_id == "" ) then
+
+	echo "No container exists for image $image_name. "
+
+else
+
+	echo "Stopping $container_id ..."
+	docker stop -t 1 $container_id
+
+	echo "Removing $container_id ..."
+	docker rm $container_id
+endif
+

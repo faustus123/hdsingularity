@@ -1,0 +1,75 @@
+#!/bin/tcsh -f
+
+set image_name=centos7:halld
+set volumes="-v ${HOME}:/home_host/$USER -v /tmp:/tmp_host"
+set container_cmd="tcsh"
+set user=$USER
+
+while ( $# ) 
+	switch ( $1 )
+		
+		case '-u':
+			shift
+			set user = $1
+			breaksw
+
+		case '-c':
+			shift
+			set container_cmd = $1
+			breaksw
+
+		case '-v':
+			shift
+			set volumes = ( $volumes '-v' $1 )
+			breaksw
+
+		case '-cv':
+			set volumes = ''
+			breaksw
+
+		default:
+			set image_name=$1
+	endsw
+	shift
+end
+
+# Check if a running container already exists for this image.
+# Use it if so, otherwise launch a new container.
+
+set container_id=`docker ps | grep $image_name | awk '{print $1}'`
+
+if ( $container_id == "" ) then
+
+	echo "No container exists for image $image_name. Creating a new one ..."
+
+	# Create new container that stays up forever until explicity stopped
+	# Map a few directories over to the container
+	set cmd = "docker run -d $volumes $image_name sleep infinity"
+	echo $cmd
+	$cmd
+
+	# Pause a couple of seconds to give container a chance to start
+	# up. Otherwise, we get "System error: too many levels of symbolic links"
+	echo "giving container time to start up ..."
+	sleep 2
+	
+	# Get container id and add user group to it
+	echo "Adding user $USER (id="`id -u`" groupid="`id -g`") ..."
+	set container_id=`docker ps -a | grep $image_name | awk '{print $1}'`
+	docker exec $container_id adduser -u `id -u` -g `id -g` -s /bin/tcsh $USER
+	docker exec -it  -u `id -u` $container_id ln -s /docker/dot_tcshrc /home/$USER/.tcshrc
+	docker exec -it  -u `id -u` $container_id ln -s /home_host/$USER /home/$USER/home_host
+endif
+
+# Get container id
+if ( $container_id == "" ) then
+
+	echo "Problem creating container!"
+
+else
+	
+	echo "Attaching to container $container_id"
+	#docker exec -it -e DISPLAY=`hostname` $container_id tcsh
+	docker exec -it  -u `id -u $user` $container_id $container_cmd
+
+endif

@@ -1,0 +1,15 @@
+FROM hdbase:c7
+RUN cd /home && curl -OL https://halldweb.jlab.org/dist/hdpm/gxsrc.tar.gz \
+    && tar xf gxsrc.tar.gz && rm gxsrc.tar.gz && cd gx \
+    && groupadd -r gx -g 573 && useradd -u 1000 \
+    -r -g gx -d /home/gx -s /sbin/nologin -c "Docker image user" gx \
+    && curl -OL https://halldweb.jlab.org/dist/hdpm/hdpm-dev.linux.tar.gz \
+    && tar xf hdpm-dev.linux.tar.gz && mv hdpm-dev/bin/hdpm /usr/bin/ \
+    && rm -rf hdpm-dev hdpm-dev.linux.tar.gz && chown -R gx:gx /home/gx
+USER gx
+WORKDIR /home/gx
+ENV GLUEX_TOP=/home/gx
+RUN /bin/bash -c "hdpm fetch -d cernlib root@binary amptools evio jana rcdb geant4 \
+    && hdpm install cernlib amptools evio jana rcdb geant4 \
+    && hdpm clean --obliterate"
+CMD /bin/bash
